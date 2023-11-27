@@ -44,13 +44,14 @@ jobs:
           REPO_NAME=$(basename "$REPO_URL")
           AUTHOR_NAME=$(echo "$REPO_URL" | rev | cut -d/ -f2 | rev)
           FOLDER_NAME="${REPO_NAME}(${AUTHOR_NAME})"
+          INNER_FOLDER="$FOLDER_NAME/$FOLDER_NAME"
+          mkdir -p "$INNER_FOLDER"
+          echo "$REPO_URL" > "$INNER_FOLDER/github.txt"
           echo "FOLDER_NAME=$FOLDER_NAME" >> $GITHUB_ENV
-          mkdir -p "$FOLDER_NAME"
-          echo "$REPO_URL" > "$FOLDER_NAME/github.txt"
 
       - name: Move APK files
         run: |
-          find ./workspace -name '*.apk' -exec mv {} "$FOLDER_NAME/" \;
+          find ./workspace -name '*.apk' -exec mv {} "$INNER_FOLDER/" \;
 
       - name: Upload the APK artifact with 1 day retention
         uses: actions/upload-artifact@v3
