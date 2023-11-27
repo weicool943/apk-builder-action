@@ -48,6 +48,7 @@ jobs:
           mkdir -p "$INNER_FOLDER"
           echo "$REPO_URL" > "$INNER_FOLDER/github.txt"
           echo "FOLDER_NAME=$FOLDER_NAME" >> $GITHUB_ENV
+          echo "INNER_FOLDER=$INNER_FOLDER" >> $GITHUB_ENV
 
       - name: Move APK files
         run: |
