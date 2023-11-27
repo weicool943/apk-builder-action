@@ -7,7 +7,7 @@ on:
       repository:
         description: "Git repository URL"
         required: true
-        default: "https://github.com/ishaan1995/ButtonProgressBar"
+        default: ""
       jdkVersion:
         description: "OpenJDK version to use: 8 / 11 / 17 etc."
         required: false
@@ -46,21 +46,11 @@ jobs:
           FOLDER_NAME="${REPO_NAME}(${AUTHOR_NAME})"
           mkdir -p "$FOLDER_NAME"
           echo "$REPO_URL" > "$FOLDER_NAME/github.txt"
-
-      - name: Find APK files
-        id: find_apk
-        run: |
-          APK_FILES=$(find . -name '*.apk')
-          if [ -z "$APK_FILES" ]; then
-            echo "::error::No APK files found."
-            exit 1
-          fi
-          echo "::set-output name=apk_path::$APK_FILES"
+          chmod 777 "$FOLDER_NAME"
 
       - name: Move APK files
-        if: steps.find_apk.outputs.apk_path
         run: |
-          mv ${{ steps.find_apk.outputs.apk_path }} "$FOLDER_NAME/"
+          mv ./workspace/app/build/outputs/apk/debug/app-debug.apk "$FOLDER_NAME/"
 
       - name: Upload the APK artifact with 1 day retention
         uses: actions/upload-artifact@v3
