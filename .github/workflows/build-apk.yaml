@@ -7,7 +7,7 @@ on:
       repository:
         description: "Git repository URL"
         required: true
-        default: ""
+        default: "https://github.com/ishaan1995/ButtonProgressBar"
       jdkVersion:
         description: "OpenJDK version to use: 8 / 11 / 17 etc."
         required: false
@@ -42,7 +42,7 @@ jobs:
           REPO_URL="${{ github.event.inputs.repository }}"
           REPO_URL="${REPO_URL%.git}"
           REPO_NAME=$(basename "$REPO_URL")
-          AUTHOR_NAME=$(dirname "$REPO_URL" | xargs basename)
+          AUTHOR_NAME=$(echo "$REPO_URL" | rev | cut -d/ -f2 | rev)
           FOLDER_NAME="${REPO_NAME}(${AUTHOR_NAME})"
           mkdir -p "$FOLDER_NAME"
           echo "$REPO_URL" > "$FOLDER_NAME/github.txt"
@@ -52,5 +52,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: ./*(*)
-          name: ${{ github.event.inputs.repository | xargs basename }}(${{ github.event.inputs.repository | xargs dirname | xargs basename }})
+          name: ${{ env.FOLDER_NAME }}
           retention-days: 1
