@@ -7,7 +7,7 @@ on:
       repository:
         description: "Git repository URL"
         required: true
-        default: "https://github.com/ishaan1995/ButtonProgressBar"
+        default: ""
       jdkVersion:
         description: "OpenJDK version to use: 8 / 11 / 17 etc."
         required: false
@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Android SDK is built-in in this image
+    runs-on: ubuntu-latest
     steps:
       - name: Setup JDK
         uses: actions/setup-java@v3
@@ -37,9 +37,20 @@ jobs:
           chmod +x gradlew
           ./gradlew ${{ github.event.inputs.taskName }} --stacktrace
 
+      - name: Prepare artifact folder
+        run: |
+          REPO_URL="${{ github.event.inputs.repository }}"
+          REPO_URL="${REPO_URL%.git}"
+          REPO_NAME=$(basename "$REPO_URL")
+          AUTHOR_NAME=$(dirname "$REPO_URL" | xargs basename)
+          FOLDER_NAME="${REPO_NAME}(${AUTHOR_NAME})"
+          mkdir -p "$FOLDER_NAME"
+          echo "$REPO_URL" > "$FOLDER_NAME/github.txt"
+          mv ./**/*.apk "$FOLDER_NAME/"
+
       - name: Upload the APK artifact with 1 day retention
         uses: actions/upload-artifact@v3
         with:
-          path: ./**/*.apk
-          name: apk-archive
+          path: ./*(*)
+          name: ${{ github.event.inputs.repository | xargs basename }}(${{ github.event.inputs.repository | xargs dirname | xargs basename }})
           retention-days: 1
