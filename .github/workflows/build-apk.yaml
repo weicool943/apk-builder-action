@@ -44,17 +44,13 @@ jobs:
           REPO_NAME=$(basename "$REPO_URL")
           AUTHOR_NAME=$(echo "$REPO_URL" | rev | cut -d/ -f2 | rev)
           FOLDER_NAME="${REPO_NAME}(${AUTHOR_NAME})"
+          echo "FOLDER_NAME=$FOLDER_NAME" >> $GITHUB_ENV
           mkdir -p "$FOLDER_NAME"
           echo "$REPO_URL" > "$FOLDER_NAME/github.txt"
-          chmod 777 "$FOLDER_NAME"
-          echo "FOLDER_NAME=$FOLDER_NAME" >> $GITHUB_ENV
-
-      - name: Display folder name
-        run: echo "Folder Name is $FOLDER_NAME"
 
       - name: Move APK files
         run: |
-          mv ./workspace/app/build/outputs/apk/debug/app-debug.apk "$FOLDER_NAME/"
+          find ./workspace -name '*.apk' -exec mv {} "$FOLDER_NAME/" \;
 
       - name: Upload the APK artifact with 1 day retention
         uses: actions/upload-artifact@v3
@@ -62,3 +58,4 @@ jobs:
           path: ${{ env.FOLDER_NAME }}
           name: ${{ env.FOLDER_NAME }}
           retention-days: 1
+          if-no-files-found: error
