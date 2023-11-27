@@ -51,7 +51,9 @@ jobs:
 
       - name: Move APK files
         run: |
-          find ./workspace -name '*.apk' -exec mv {} "$INNER_FOLDER/" \;
+          find ./workspace -name '*.apk' | while read apk_file; do
+            mv "$apk_file" "$INNER_FOLDER/"
+          done
 
       - name: Upload the APK artifact with 1 day retention
         uses: actions/upload-artifact@v3
