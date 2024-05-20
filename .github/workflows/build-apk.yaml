@@ -56,16 +56,14 @@ jobs:
           echo "FOLDER_NAME=$FOLDER_NAME" >> $GITHUB_ENV
           echo "INNER_FOLDER=$INNER_FOLDER" >> $GITHUB_ENV
 
-      - name: Move APK files
+      - name: Compress project
         run: |
-          find ./workspace -name '*.apk' | while read apk_file; do
-            mv "$apk_file" "$INNER_FOLDER/"
-          done
+          zip -r "${FOLDER_NAME}.zip" ./workspace
 
-      - name: Upload the APK artifact with 1 day retention
+      - name: Upload the project artifact with 1 day retention
         uses: actions/upload-artifact@v3
         with:
-          path: ${{ env.FOLDER_NAME }}
+          path: ${{ env.FOLDER_NAME }}.zip
           name: ${{ env.FOLDER_NAME }}
           retention-days: 1
           if-no-files-found: error
